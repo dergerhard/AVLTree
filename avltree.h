@@ -145,10 +145,8 @@ private:
         //go left
         if (val < n->val)
         {
-            //cout << "val < " << n->val << endl;
             if (n->left==0)
             {
-                //cout << "insert " << val << " left from " << n->val << endl;
                 n->left = new Node<T>();
                 n->left->val = val;
                 n->correctHeight();
@@ -156,12 +154,10 @@ private:
             }
             else
             {
-                //cout << "   go left from " << n->val << endl<<endl;
                 insert(n->left, n, val);
                 Node<T> *tmp = rebalance(n);
                 if (parent!=n)
                 {
-                    //print();
                     if (tmp->val > parent->val)
                         parent->right = tmp;
                     else parent->left = tmp;
@@ -174,10 +170,8 @@ private:
         //go right
         if (val > n->val)
         {
-            //cout << "val > " << n->val << endl;
             if (n->right==0)
             {
-                //cout << "insert " << val << " right from " << n->val << endl <<endl;
                 n->right = new Node<T>();
                 n->right->val = val;
                 n->correctHeight();
@@ -185,7 +179,6 @@ private:
             }
             else
             {
-                //cout << "   go right from " << n->val << endl;
                 insert(n->right, n, val);
                 Node<T> *tmp = rebalance(n);
                 if (parent!=n)
@@ -278,7 +271,7 @@ private:
             }
             else if (node->left==0 && node->right!=0)
             {
-                T tmp = retreiveSmallestSuccessorAndRemoveNode(node->right, node);
+                T tmp = retreiveSmallestPredecessorAndRemoveNode(node->right, node);
                 node->val = tmp;
             }
             else if (node->left!=0 && node->right==0)
@@ -331,8 +324,14 @@ private:
 
     }
 
+    /*!
+     * \brief goes right from node, until a leaf is found. The leaf is deletet and its value retreived.
+     * \param node start node
+     * \param parent parent of node
+     * \return returns the value of the biggest successor
+     */
     T retreiveBiggestSuccessorAndRemoveNode(Node<T> *node, Node<T> *parent)
-    {//hier ist irgendwo ein fehler
+    {
         if (node->right!=0)
         {
             if (node->right->val > node->val)
@@ -341,12 +340,10 @@ private:
                 parent->left = parent->left!=0 ? rebalance(parent->left) : 0;
                 parent->right = parent->right!=0 ? rebalance(parent->right) : 0;
                 return tmp;
-                //node->right = node->right!=0 ? rebalance(node->right) : 0;
             }
         }
         else
         {
-
             if (parent->left==node)
                 parent->left= parent->left!=0 ? parent->left->left : 0;
             else parent->right= parent->right!=0 ? parent->right->left : 0;
@@ -356,13 +353,20 @@ private:
         }
     }
 
-    T retreiveSmallestSuccessorAndRemoveNode(Node<T> *node, Node<T> *parent)
+
+    /*!
+     * \brief goes left from node, until a leaf is found. The leaf is deletet and its value retreived.
+     * \param node start node
+     * \param parent parent of node
+     * \return returns the value of the smallest successor
+     */
+    T retreiveSmallestPredecessorAndRemoveNode(Node<T> *node, Node<T> *parent)
     {
         if (node->left!=0)
         {
             if (node->left->val < node->val)
             {
-                T tmp = retreiveSmallestSuccessorAndRemoveNode(node->left, node);
+                T tmp = retreiveSmallestPredecessorAndRemoveNode(node->left, node);
                 parent->left = parent->left!=0 ? rebalance(parent->left) : 0;
                 parent->right = parent->right!=0 ? rebalance(parent->right) : 0;
                 return tmp;
@@ -381,11 +385,15 @@ private:
 
 public:
 
+    /*!
+     * \brief the tree is initialized and empty
+     */
     AVLTree()
     {
         initialized=false;
         count=0;
     }
+
 
     ~AVLTree()
     {
@@ -393,38 +401,20 @@ public:
             clear();
     }
 
+    /*!
+     * \brief returns the number of elements in the tree
+     * \return
+     */
     int size()
     {
         return count;
     }
 
-    /*
-    int checkHeightRecursively(Node<T> *node)
-    {
-        if (node->left==0 && node->right==0)
-            return 0;
-
-        int lH=0;
-        int rH=0;
-
-        if (node->left != 0)
-            lH = 1 + checkHeightRecursively(node->left);
-
-        if (node->right != 0)
-            rH = 1 + checkHeightRecursively(node->right);
-
-        if (lH>rH)
-            return lH;
-        else return rH;
-    }
-
-
-    bool checkBalanceFactorsRecursively(Node<T> *node)
-    {
-
-    }
-    */
-
+    /*!
+     * \brief rotateLL performs a left-left rotation
+     * \param node node with balance factor 2
+     * \return returns the root node of the rotation
+     */
     Node<T>* rotateLL(Node<T> *node)
     {
         Node<T> *tmp = node->left;
@@ -438,6 +428,11 @@ public:
         return tmp;
     }
 
+    /*!
+     * \brief rotateLR performs a left-right rotation
+     * \param node node with balance factor 2
+     * \return returns the root node of the rotation
+     */
     Node<T>* rotateLR(Node<T> *node)
     {
         Node<T> *lrr = node->left->right->right;
@@ -456,6 +451,11 @@ public:
         return node;
     }
 
+    /*!
+     * \brief rotateRL performs a right-left rotation
+     * \param node node with balance factor 2
+     * \return returns the root node of the rotation
+     */
     Node<T>* rotateRL(Node<T> *node)
     {
         Node<T> *rll = node->right->left->left;
@@ -474,6 +474,11 @@ public:
         return node;
     }
 
+    /*!
+     * \brief rotateRR performs a rihgt-right rotation
+     * \param node node with balance factor 2
+     * \return returns the root node of the rotation
+     */
     Node<T>* rotateRR(Node<T> *node)
     {
         Node<T> *tmp = node->right;
@@ -487,8 +492,10 @@ public:
         return tmp;
     }
 
-
-
+    /*!
+     * \brief clear removes all elements of the tree
+     * \param debugOutput if true, the deleted elements are printed to the console
+     */
     void clear(bool debugOutput=false)
     {
         clear(root, debugOutput);
@@ -496,6 +503,10 @@ public:
         initialized=false;
     }
 
+    /*!
+     * \brief insert inserts a value into the tree
+     * \param t value
+     */
     void insert(T t)
     {
         if (!initialized)
@@ -510,16 +521,17 @@ public:
             insert(root, root, t);
             root->correctHeight();
         }
-        //print();
     }
 
 
-
+    /*!
+     * \brief print prints the tree to the console. If a filename is specified, the tree will be printed to that file.
+     * \param filename
+     */
     void print(string filename="")
     {
         if (initialized)
         {
-
             if (filename == "")
             {
                 ostream &output = cout;
@@ -533,14 +545,15 @@ public:
                 output.open(filename.c_str(), ios::out | ios::app | ios::binary);
                 print (root, output, 0);
                 output.close();
-
             }
-
-
         }
     }
 
-
+    /*!
+     * \brief remove removes a value from the tree
+     * \param t value
+     * \return true if a value is removed, false if not
+     */
     bool remove(T t)
     {
         bool res = false;

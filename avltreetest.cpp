@@ -21,7 +21,7 @@ AVLTreeTest::AVLTreeTest()
 bool AVLTreeTest::testRotation(string name, int v1, int v2, int v3, int rootShouldBe, int leftShouldBe, int rightShouldBe, bool printTree)
 {
     cout << "TESTING " << name <<"-ROTATION" << endl;
-    cout << line80chars << endl;
+    cout << line80charsMinus << endl;
 
     AVLTree<int> *t = new AVLTree<int>();
 
@@ -50,7 +50,7 @@ bool AVLTreeTest::testRotation(string name, int v1, int v2, int v3, int rootShou
     {
         cout << name << " ROTATION FAILED! :(" << endl;
     }
-    cout << line80chars << endl << endl;
+    cout << line80charsMinus << endl << endl;
 
 }
 
@@ -218,7 +218,7 @@ bool AVLTreeTest::randomNumbersTest(int count, int startRange, int endRange)
     vector<int> *stlVec = new vector<int>();
     srand (time(NULL));
 
-    cout << line80chars << endl;
+    cout << line80charsMinus << endl;
     cout << "Preparing test..." << endl;
     cout << "    Generating " << count << " random numbers between " <<  startRange << " and " << endRange << "...... ";
     cout.flush();
@@ -238,8 +238,6 @@ bool AVLTreeTest::randomNumbersTest(int count, int startRange, int endRange)
     stlVec->erase(unique(stlVec->begin(), stlVec->end()), stlVec->end());
     cout << "done" << endl;
     cout << "    " << (count-stlVec->size()) << " duplicates removed" << endl;
-
-
 
 
     cout << "Running insert test...... " << endl;
@@ -271,13 +269,34 @@ bool AVLTreeTest::randomNumbersTest(int count, int startRange, int endRange)
     cout << "Running delete test...... " << endl;
     cout << "    Deleting half the elements from the AVLTree...... " ;
     cout.flush();
-    for (int i=0; i<(stlVec->size()/10); i++)
+    int overwriteCount=0;
+    for (int i=0; i<(stlVec->size()/100); i++)
     {
         int removeAt =rand() % stlVec->size();
         int removeValue = stlVec->at(removeAt);
+
+        if (i%20==0)
+            cout << "(" << i << ")" << removeValue;
+
         tr->remove(removeValue);
         stlVec->erase(stlVec->begin()+removeAt);
+
+
+        if (i%20==0)
+        {
+            ostringstream conv1;
+            conv1 << removeValue;
+            ostringstream conv2;
+            conv2 << i;
+            overwriteCount =conv1.str().size()+2+conv2.str().size();
+            for (int j=0; j<overwriteCount; j++)
+                cout << '\b';
+        }
+
     }
+    for (int j=0; j<overwriteCount; j++)
+        cout << ' ';
+
     cout << "done" << endl;
 
 
@@ -300,7 +319,4 @@ bool AVLTreeTest::randomNumbersTest(int count, int startRange, int endRange)
     if (stlVec->size()==tr->size())
         cout << "succeeded" << endl;
     else cout << "failed. Size difference is" << (stlVec->size()-tr->size()) << endl;
-
-
-
 }

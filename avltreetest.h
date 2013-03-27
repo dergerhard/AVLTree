@@ -8,13 +8,14 @@
 #include <list>
 #include <vector>
 #include <algorithm>
+#include <sstream>
 
 using namespace std;
 
-const string line80chars = "################################################################################";
+const string line80charsMinus = "--------------------------------------------------------------------------------";
 
 /*
- * This class tests the 4 kinds of rotations. If you call the test methods with (true), after every insertion the tree will be printed.
+ * This class tests different scenarios of the AVLTree.
  */
 class AVLTreeTest
 {

@@ -9,7 +9,15 @@
 #include <cctype>
 
 enum Cmd{ FourInsertScenarios, TimeTest, TimeTestSorted, RandomTest, All, Help};
+const string line80charsSharp = "################################################################################";
 
+
+/*!
+ * \brief getCommand parses the command line arguments and returns the right command
+ * \param argc
+ * \param argv
+ * \return the command to be executed
+ */
 Cmd getCommand(int argc, char *argv[])
 {
     for (int i=0; i<argc; i++)
@@ -28,32 +36,38 @@ Cmd getCommand(int argc, char *argv[])
                     return TimeTestSorted;
                 if (strcmp(argv[i+1], "RandomTest")==0)
                     return RandomTest;
-                if (strcmp(argv[i+1], "All")==0
-                        )
+                if (strcmp(argv[i+1], "All")==0)
                     return All;
             }
         }
     }
-    return All;
+    return Help;
 }
 
+/*!
+ * \brief printHelp prints out the help file.
+ */
 void printHelp()
 {
     cout << "Usage: AVLTree -test [FourInsertScenarios | TimeTest | TimeTestSorted | RandomTest | All]" << endl << endl;
-    cout << "   FourInsertScenarios: Tests the four possible rotations" << endl << endl;
-    cout << "   TimeTest: Measures the insert time for the values in 'testvalues.txt'" << endl << endl;
-    cout << "   TimeTestSorted: Measures the insert time for the values in 'testvalues_sorted.txt'" << endl << endl;
-    cout << "   RandomTest: Performs a test of inserting 1,000,000 random numbers and deleting 10,000 randomly" << endl << endl;
-    cout << "   All: Performs all above tests" << endl << endl;
-    cout << "All commands are case sensitive!" << endl;
+    cout << "- FourInsertScenarios: Tests the four possible rotations" << endl;
+    cout << "- TimeTest: Measures the insert time for the values in 'testvalues.txt'" << endl;
+    cout << "- TimeTestSorted: Measures the insert time for the values in 'testvalues_sorted.txt'" << endl;
+    cout << "- RandomTest: Performs a test of inserting 1,000,000 random numbers and deleting 10,000 randomly" << endl;
+    cout << "- All: Performs all above tests" << endl;
+    cout << "ATTENTION: All commands are case sensitive!" << endl;
 }
 
 
+/*!
+ * \brief timeTest Runs a value insert test and measures the time to do it.
+ * \param filename filename with the values. ATTENTION: there can only be one value per line. Duplicates are ignored.
+ */
 void timeTest(string filename)
 {
-    cout << line80chars << endl;
+    cout << line80charsSharp << endl;
     cout << "Running Time Test with " << filename << endl;
-    cout << line80chars << endl;
+    cout << line80charsSharp << endl;
 
     int nextValue;
     int count=0;
@@ -84,21 +98,51 @@ void timeTest(string filename)
         delete t;
     }
     else cout << "Unable to open file";
+
+    cout << endl << endl;
 }
 
+/*!
+ * \brief fourInsertScenarios tests the four rotations with predefined input and expected output.
+ */
 void fourInsertScenarios()
 {
+    cout << line80charsSharp << endl;
+    cout << "Running 4 insert scenarios" << endl;
+    cout << line80charsSharp << endl;
 
+    AVLTreeTest::testLLRotation(false);
+    AVLTreeTest::testLRRotation(false);
+    AVLTreeTest::testRRRotation(false);
+    AVLTreeTest::testRLRotation(false);
+
+    cout << endl << endl;
 }
 
+/*!
+ * \brief randomTest inserts 1,000,000 random numbers into the tree, checks its integrity, then removes 10,000 values and checks the integrity again.
+ */
 void randomTest()
 {
+    cout << line80charsSharp << endl;
+    cout << "Inserting 1,000,000 random numbers and deleting 10,000 randomly" << endl;
+    cout << line80charsSharp << endl;
 
+    AVLTreeTest::randomNumbersTest(1000000);
+
+    cout << endl << endl;
 }
 
+
+/*!
+ * \brief testAll calls all available tests
+ */
 void testAll()
 {
-
+    fourInsertScenarios();
+    timeTest("testvalues.txt");
+    timeTest("testvalues_sorted.txt");
+    randomTest();
 }
 
 int main(int argc, char *argv[]) {
@@ -115,120 +159,6 @@ int main(int argc, char *argv[]) {
     case RandomTest: randomTest(); break;
     case All: testAll(); break;
     }
-
-
-    AVLTree<int> *t = new AVLTree<int>();
-
-
-    /*AVLTreeTest::testLLRotation(false);
-    AVLTreeTest::testLRRotation(false);
-    AVLTreeTest::testRRRotation(false);
-    AVLTreeTest::testRLRotation(false);
-*/
-
-
-    /*
-    //BENCHMARK----------------------------------------------------------------
-    set<int> s;
-    srand (time(NULL));
-
-    for (int i=0; i<20000000; i++)
-    {
-        int r = rand()%1000000000+1;
-        s.insert(r);
-        //cout << "Nr. " << i << ": " << r << endl;
-    }
-    cout << "Random numbers ready!" << endl;
-
-    vector<float> benchmark;
-    clock_t begin;
-    clock_t end;
-    int c=0;
-    int resolution = 100000; //all 100 elements a time measurement is taken
-
-    begin = clock();
-    for (set<int>::iterator i=s.begin(); i!=s.end(); ++i)
-    {
-        if (c%resolution==1)
-            begin=clock();
-
-        t->insert(*i);
-
-        if (c%resolution==0)
-        {
-            //cout << "@element " << c << ". ";
-            end = clock();
-            //cout << "Time to insert into tree: " << ((((float)end)-((float)begin))/1000) << "ms " << endl;
-
-            cout << c << ";" << ((((float)end)-((float)begin))/1000) << ";" << endl;
-            //benchmark.push_back(((((float)end)-((float)begin))));
-        }
-        c++;
-    }
-
-    for (int i=0; i<benchmark.size(); i++)
-    {
-        cout << "Time " << i << ": " << benchmark.at(i) << endl;
-    }
-
-
-    cout << "Time to insert into tree: " << ((((float)end)-((float)begin))/1000) << "ms " << endl;
-
-    cout << "set size:  " << s.size() << endl;
-    cout << "tree size: " << t->size() << endl;
-
-    //END BENCHMARK ----------------------------------------------------------------
-    */
-
-
-
-    /*
-    //MANUAL INPUT TEST
-    while (true)
-    {
-        int x=0;
-        cin >> x;
-        t->insert(x);
-        t->print();
-    }
-
-    t->print();
-
-    */
-
-/*
-    //Trausmuth benchmark
-
-
-
-    //Test the tree with random numbers
-    //AVLTreeTest::randomNumbersTest(20);
-
-*/
-
-
-
-    /*
-    AVLTreeTest::randomNumbersTest(2000000);
-
-    AVLTree<int> *tr = new AVLTree<int>;
-
-    for (int i=20; i<=90; i+=5)
-        tr->insert(i);
-
-    tr->print();
-
-    for (int i=20; i<=90; i+=5)
-    {
-        int x;
-        cin >> x;
-
-        tr->remove(x);
-        tr->print();
-        cout << x << " REMOVED!!, size=" << tr->size() << endl;
-    }
-*/
-
 
     return 0;
 }
